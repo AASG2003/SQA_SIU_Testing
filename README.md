@@ -7,7 +7,7 @@ python -m venv .venv
 # Activarlo si hace falta
 .venv\Scripts\activate
 # Instalar las depedencias segun el requirements
-pip install -r
+pip install -r requirements.txt
 ```
 ## Ejecutar test cases
 ```bash
