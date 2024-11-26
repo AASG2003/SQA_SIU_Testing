@@ -19,23 +19,22 @@ class TestSiuLogin:
     def test_siu_login_entry_user_and_captcha(self):
         expected = 'Bienvenido QSS2026503'
         page = SiuLogin(self.driver)
-        page.escribir_nombre_usuario("qss2026503")
-        time.sleep(5)
-        #page.resolver_captcha()
-        page.boton_click_enviar()
 
         time.sleep(5)
-        
+        page.resolver_modulo_captcha("qss2026503")
+
+        time.sleep(5)
         text = self.driver.find_element(By.XPATH,'//div[@class = "col"]//child::span[contains(@id, "Usuario")]').text
         assert text == expected, f"FAIL: Current:{text}, Expected: {expected}"
     
     def test_siu_login_invalid_user_and_captcha(self):
         expected = 'Bienvenido QSS2026503'
         page = SiuLogin(self.driver)
+
         page.escribir_nombre_usuario("1283941")
         page.escribir_captcha("asjdioaj")
+
         time.sleep(5)
-        #page.resolver_captcha()
         page.boton_click_enviar()
 
         time.sleep(5)
@@ -83,11 +82,7 @@ class TestSiuLogin:
     def test_siu_login_insert_correct_pin(self):
         expected = 'BOLIVIA'
         page = SiuLogin(self.driver)
-        page.escribir_nombre_usuario("qss2026503")
-        time.sleep(5)
-        #page.resolver_captcha()
-        page.boton_click_enviar()
-
+        page.resolver_modulo_captcha("qss2026503")
         time.sleep(5)
 
         page.boton_click_estudiante_enviar()

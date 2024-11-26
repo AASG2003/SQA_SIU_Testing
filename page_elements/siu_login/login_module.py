@@ -7,6 +7,8 @@ from io import BytesIO
 from PIL import Image, ImageFilter,ImageEnhance
 import pytesseract
 import time
+import re
+import os
 
 class SiuLogin:
     def __init__(self, driver):
@@ -30,24 +32,39 @@ class SiuLogin:
     def boton_click_estudiante_enviar(self):
         self.driver.find_element(*self.boton_estudiante).click()
 
-    
+    def resolver_modulo_captcha(self, texto):
+        max_retries = 10
+        attempts = 0
+        while attempts < max_retries:
+            self.escribir_nombre_usuario(texto)
+            time.sleep(3)
+            captcha_element = self.driver.find_element(By.ID, "CPHBody_imgCaptcha")
+            captcha_screenshot = captcha_element.screenshot_as_png
+            with open("captcha.png", "wb") as file:
+                file.write(captcha_screenshot)
+            captcha_image = self.preprocess_image("captcha.png")
+            pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+            custom_config = r'--oem 3 --psm 6'
+            captcha_text = pytesseract.image_to_string(captcha_image, config=custom_config)
+            print("Texto del CAPTCHA:", captcha_text)
 
-    #Talvez no se llegue a utilizar
-    def resolver_captcha(self):
-        captcha_element = self.driver.find_element(*self.imagen_captcha)
-        captcha_url = captcha_element.get_attribute('src')
-        response = requests.get(captcha_url)
-        img = Image.open(BytesIO(response.content))
-        img = img.convert('L')
-        img = img.filter(ImageFilter.MedianFilter(3))
-        enhancer = ImageEnhance.Contrast(img)
-        img = enhancer.enhance(2)
-        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-        texto_captcha = pytesseract.image_to_string(img, config='--oem 3 --psm 6')
+            clean_text = re.sub(r'[^a-zA-Z0-9]', '', captcha_text)
+            print("Texto limpio del CAPTCHA:", clean_text)
 
-        texto_captcha = texto_captcha.strip()
-        print(texto_captcha)
-        self.escribir_captcha(texto_captcha)
+            self.driver.find_element(By.XPATH, "//input[@id='CPHBody_txbCaptcha']").send_keys(clean_text)
+            self.driver.find_element(By.XPATH, "//input[@id='CPHBody_lbtnIngresar']").click()
+            time.sleep(1)
+
+            try:
+                self.driver.find_element(By.XPATH, "//*[@id='CPHBody_lblCaptchaError']")
+                print("Error: CAPTCHA incorrecto. Reintentando...")
+                attempts += 1
+                time.sleep(2)
+            except:
+                print("CAPTCHA ingresado correctamente.")
+                os.remove("captcha.png")
+                break
+            os.remove("captcha.png")
     
     def escribir_pin(self, pin):
         name_att = self.driver.find_element(By.XPATH, "//input[@type = 'password']").get_attribute('name')
@@ -62,13 +79,23 @@ class SiuLogin:
         self.driver.find_element(*self.boton_enviar_pin).click()
 
     def login_completo(self, usuario, pin):
-        self.escribir_nombre_usuario(usuario)
-        #tiempo para poder ingresar el pin correcto
-        time.sleep(15)
-        self.boton_click_enviar()
+        #unicamente necesita el usuario
+        self.resolver_modulo_captcha(usuario)
         time.sleep(5)
         self.boton_click_estudiante_enviar()
         time.sleep(5)
         self.escribir_pin(pin)
         time.sleep(5)
             
+    #Funcion para procesar la imagen
+    def preprocess_image(self, image_path):
+        img = Image.open(image_path)
+
+        img_gray = img.convert('L')
+
+        enhancer = ImageEnhance.Contrast(img_gray)
+        img_enhanced = enhancer.enhance(2) 
+        threshold = 150
+        img_bw = img_enhanced.point(lambda p: p > threshold and 255)
+
+        return img_bw
