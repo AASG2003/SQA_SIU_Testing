@@ -1,10 +1,7 @@
 # Aquí se incluirán los pasos específicos o comunes para poder interactuar con los elementos de la página
 
 from selenium.webdriver.common.by import By
-from selenium import webdriver
-import requests
-from io import BytesIO
-from PIL import Image, ImageFilter,ImageEnhance
+from PIL import Image,ImageEnhance
 import pytesseract
 import time
 import re
@@ -33,11 +30,11 @@ class SiuLogin:
         self.driver.find_element(*self.boton_estudiante).click()
 
     def resolver_modulo_captcha(self, texto):
-        max_retries = 10
+        max_retries = 20
         attempts = 0
-        while attempts < max_retries:
+        while attempts <= max_retries:
             self.escribir_nombre_usuario(texto)
-            time.sleep(3)
+            time.sleep(1)
             captcha_element = self.driver.find_element(By.ID, "CPHBody_imgCaptcha")
             captcha_screenshot = captcha_element.screenshot_as_png
             with open("captcha.png", "wb") as file:
@@ -59,7 +56,7 @@ class SiuLogin:
                 self.driver.find_element(By.XPATH, "//*[@id='CPHBody_lblCaptchaError']")
                 print("Error: CAPTCHA incorrecto. Reintentando...")
                 attempts += 1
-                time.sleep(2)
+                time.sleep(1)
             except:
                 print("CAPTCHA ingresado correctamente.")
                 os.remove("captcha.png")
