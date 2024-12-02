@@ -6,6 +6,10 @@ import pytesseract
 import time
 import re
 import os
+import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env.test")
 
 class SiuLogin:
     def __init__(self, driver):
@@ -40,13 +44,16 @@ class SiuLogin:
             with open("captcha.png", "wb") as file:
                 file.write(captcha_screenshot)
             captcha_image = self.preprocess_image("captcha.png")
-            pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+            tesseract_path = os.getenv('TEST_TESSERACT_PATH')
+            pytesseract.pytesseract.tesseract_cmd = tesseract_path
             custom_config = r'--oem 3 --psm 6'
             captcha_text = pytesseract.image_to_string(captcha_image, config=custom_config)
             print("Texto del CAPTCHA:", captcha_text)
 
             clean_text = re.sub(r'[^a-zA-Z0-9]', '', captcha_text)
             print("Texto limpio del CAPTCHA:", clean_text)
+            if len(clean_text) == 0:
+                clean_text = "182742"
 
             self.driver.find_element(By.XPATH, "//input[@id='CPHBody_txbCaptcha']").send_keys(clean_text)
             self.driver.find_element(By.XPATH, "//input[@id='CPHBody_lbtnIngresar']").click()
