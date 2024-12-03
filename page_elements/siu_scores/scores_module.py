@@ -23,6 +23,7 @@ class SiuScores:
         self.mensaje_error = (By.XPATH, '//div[contains(@class, "alert")]//span[@class="message"]')
         self.titulo_error = (By.XPATH, '//div[contains(@class, "alert")]//span[@class="title"]')
         self.seccion_error = (By.XPATH, '//div[contains(@class, "alert")]//span')
+        self.tabla_materias_notas = (By.XPATH, '//tbody//td')
         
     def realizar_login(self):
         login = SiuLogin(self.driver)
@@ -63,10 +64,13 @@ class SiuScores:
         return self.driver.find_elements(*self.opciones)
     
     def obtener_titulo_error(self):
-        return self.driver.find_element(*self.titulo_error)
+        return self.driver.find_element(*self.titulo_error).text
     
     def obtener_mensaje_error(self):
-        return self.driver.find_element(*self.mensaje_error)
+        return self.driver.find_element(*self.mensaje_error).text
+    
+    def obtener_celdas_tabla(self):
+        return self.driver.find_elements(*self.tabla_materias_notas)
     
     
 

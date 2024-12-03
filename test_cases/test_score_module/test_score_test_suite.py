@@ -54,7 +54,7 @@ class TestSiuScores:
         assert expected == actual, f"FAIL: expected: {expected}, actual:{actual}"
 
     def test_error_title(self):
-        expected = "ATÉNCION"
+        expected = "ATENCIÓN"
         Scores_page = SiuScores(self.driver, f"{os.getenv('TEST_USERNAME')}", f"{os.getenv('TEST_PASSWORD')}")
         Scores_page.ingresar_seccion_notas()
         opciones = Scores_page.obtener_opciones()
@@ -63,11 +63,11 @@ class TestSiuScores:
         opciones = Scores_page.obtener_opciones()
         opciones[0].click()
         time.sleep(2)
-        actual = Scores_page.obtener_titulo_error
-        assert expected in actual, f"FAIL: expected: {expected}, actual:{actual}"
+        actual = Scores_page.obtener_titulo_error()
+        assert expected == actual, f"FAIL: expected: {expected}, actual:{actual}"
     
     def test_error_message(self):
-        expected = "Debe seleccionar una gestión para que pueda apreciar las notas."
+        expected = "Debe seleccionar una gestión para que puede apreciar las notas."
         Scores_page = SiuScores(self.driver, f"{os.getenv('TEST_USERNAME')}", f"{os.getenv('TEST_PASSWORD')}")
         Scores_page.ingresar_seccion_notas()
         opciones = Scores_page.obtener_opciones()
@@ -76,5 +76,17 @@ class TestSiuScores:
         opciones = Scores_page.obtener_opciones()
         opciones[0].click()
         time.sleep(2)
-        actual = Scores_page.obtener_mensaje_error
-        assert expected in actual, f"FAIL: expected: {expected}, actual:{actual}"
+        actual = Scores_page.obtener_mensaje_error()
+        assert expected == actual, f"FAIL: expected: {expected}, actual:{actual}"
+    
+    def test_scores_per_year(self):
+        Scores_page = SiuScores(self.driver, f"{os.getenv('TEST_USERNAME')}", f"{os.getenv('TEST_PASSWORD')}")
+        Scores_page.ingresar_seccion_notas()
+        notExpected = 0
+        time.sleep(3)
+        for i in range(1, len(Scores_page.obtener_opciones())):
+            gestion = Scores_page.obtener_opciones()[i]
+            time.sleep(3)
+            gestion.click()
+            actual = len(Scores_page.obtener_celdas_tabla())
+            assert actual >= notExpected, f"FAIL: expected: {notExpected}, actual:{actual}"
