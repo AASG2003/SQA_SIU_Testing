@@ -6,13 +6,14 @@ import pytesseract
 import time
 import re
 import os
-import os
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env.test")
 
 class SiuLogin:
     def __init__(self, driver):
+        self.user = os.getenv("TEST_USERNAME")
+        self.password = os.getenv("TEST_PASSWORD")
         self.driver = driver
         self.boton_enviar = (By.XPATH, '//div[@class="row justify-content-center"]//descendant::div[@class = "col-12"]//child::input[@type="submit"]')
         self.ingresar_usuario = (By.XPATH, '//div[@class = "row justify-content-center"]//child::div[contains(@class, "input")]//child::input[@type = "text"]')
@@ -81,6 +82,15 @@ class SiuLogin:
         
         time.sleep(2)
         self.driver.find_element(*self.boton_enviar_pin).click()
+
+    def ingresar_usuario_y_captcha(self):
+        self.resolver_modulo_captcha(self.user)
+    
+    def ingresar_pin_e_ingresar_a_menu_perfil(self):
+        self.boton_click_estudiante_enviar()
+        time.sleep(2)
+        self.escribir_pin(self.password)
+        time.sleep(2)
 
     def login_completo(self, usuario, pin):
         #unicamente necesita el usuario

@@ -63,7 +63,7 @@ class TestSiuScores:
         opciones = Scores_page.obtener_opciones()
         opciones[0].click()
         time.sleep(2)
-        actual = Scores_page.obtener_titulo_error
+        actual = Scores_page.obtener_titulo_error()
         assert expected in actual, f"FAIL: expected: {expected}, actual:{actual}"
     
     def test_error_message(self):
@@ -76,5 +76,5 @@ class TestSiuScores:
         opciones = Scores_page.obtener_opciones()
         opciones[0].click()
         time.sleep(2)
-        actual = Scores_page.obtener_mensaje_error
+        actual = Scores_page.obtener_mensaje_error()
         assert expected in actual, f"FAIL: expected: {expected}, actual:{actual}"
