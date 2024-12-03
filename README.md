@@ -13,3 +13,14 @@ pip install -r requirements.txt
 ```bash
 pytest -s -v [direccionDelArchivo]
 ```
+
+### Informacion importante para el captcha
+** Aplicacion necesario para poder pasar el captcha, descarga directa [Tesseract](https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe) **
+
+### Informacion importante para el usuario, pin y tesseract
+
+Crear un .env.test en la raiz del proyecto y crear las variables de entorno correspondientes al usuario, pin y la ubicacion de tesseract en el equipo.  
+- TEST_USERNAME  
+- TEST_PASSWORD  
+- TEST_TESSERACT_PATH  
+
