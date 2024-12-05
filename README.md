@@ -23,4 +23,6 @@ Crear un .env.test en la raiz del proyecto y crear las variables de entorno corr
 - TEST_USERNAME  
 - TEST_PASSWORD  
 - TEST_TESSERACT_PATH  
-
+- TEST_APP_DEVICE_PLATFORM = "Android"
+- TEST_APP_DEVICE_VERSION = "12"
+- TEST_APP_DEVICE_NAME = "RMX2086L1"
